@@ -70,6 +70,14 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 
 section{padding:64px 0;border-bottom:1px solid var(--line);}
 .section-head{display:grid;grid-template-columns:1fr 1.6fr;gap:40px;margin-bottom:44px;align-items:start;}
+.results-head{align-items:end;}
+.results-intro{font-size:15.5px;line-height:1.65;color:var(--muted);max-width:42em;margin:0;}
+.results-note{display:block;margin-top:12px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--pink);}
+@media (max-width:760px){
+  .results-head{gap:12px;}
+  .results-intro{font-size:14.5px;line-height:1.55;}
+  .results-note{margin-top:9px;}
+}
 .section-head h2{font-size:clamp(26px,3.4vw,38px);}
 @media (max-width:760px){.section-head{grid-template-columns:1fr;gap:16px;}}
 
@@ -302,9 +310,15 @@ footer{padding:50px 0 34px;background:linear-gradient(160deg,#343132 0%,var(--ch
 
   <section id="results">
     <div class="wrap">
-      <div class="section-head">
-        <div class="eyebrow">Results</div>
-        <h2>Before and after, treatment by treatment.</h2>
+      <div class="section-head results-head">
+        <div>
+          <div class="eyebrow">Selected Results</div>
+          <h2>Subtle changes. Confident smiles.</h2>
+        </div>
+        <div>
+          <p class="results-intro">A glimpse of the transformations cosmetic dentistry can create — thoughtfully planned around your features, goals, and natural smile.</p>
+          <span class="results-note">Illustrative examples shown below</span>
+        </div>
       </div>
       <div class="ba-grid"><p class="demo-note" style="grid-column:1/-1;font-size:12px;color:var(--muted);margin:-20px 0 0;">Illustrative stock imagery — not actual Healthysmiles patient results.</p>
         <div class="ba-card">
