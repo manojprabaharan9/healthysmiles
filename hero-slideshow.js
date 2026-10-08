@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+(function () {
   var slides = document.querySelectorAll('.hero-slide');
   var dots = document.querySelectorAll('.hero-dot');
   var prev = document.querySelector('.hero-prev');
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!slides.length || !prev || !next) return;
 
   var index = 0;
-  var timer;
+  var timer = null;
 
   function show(n) {
     index = (n + slides.length) % slides.length;
@@ -22,31 +22,25 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function restart() {
-    clearInterval(timer);
-    timer = setInterval(function () {
+    if (timer) window.clearInterval(timer);
+    timer = window.setInterval(function () {
       show(index + 1);
     }, 5000);
   }
 
-  prev.addEventListener('click', function (event) {
-    event.preventDefault();
-    event.stopPropagation();
+  prev.addEventListener('click', function () {
     show(index - 1);
     restart();
   });
 
-  next.addEventListener('click', function (event) {
-    event.preventDefault();
-    event.stopPropagation();
+  next.addEventListener('click', function () {
     show(index + 1);
     restart();
   });
 
   for (var k = 0; k < dots.length; k++) {
     (function (dotIndex) {
-      dots[dotIndex].addEventListener('click', function (event) {
-        event.preventDefault();
-        event.stopPropagation();
+      dots[dotIndex].addEventListener('click', function () {
         show(dotIndex);
         restart();
       });
@@ -55,4 +49,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
   show(0);
   restart();
-});
+})();
