@@ -502,24 +502,7 @@ document.getElementById('apptForm').addEventListener('submit', function(e){
   prev.addEventListener('click',function(){step(-1);});
   next.addEventListener('click',function(){step(1);});
 })();
-document.addEventListener('DOMContentLoaded', function(){
-  var slides = document.querySelectorAll('.hero-slide');
-  var dots = document.querySelectorAll('.hero-dot');
-  var prev = document.querySelector('.hero-prev');
-  var next = document.querySelector('.hero-next');
-  if (!slides.length || !prev || !next) return;
-  var index = 0;
-  var timer = null;
-  function show(n) {
-    index = (n + slides.length) % slides.length;
-    for (var i = 0; i < slides.length; i++) slides[i].classList.toggle('is-active', i === index);
-    for (var j = 0; j < dots.length; j++) dots[j].classList.toggle('is-active', j === index);
-  }
-  function restart() {
-    if (timer) clearInterval(timer);
-    timer = setInterval(function(){ show(index + 1); }, 5000);
-  }
-  prev.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); show(index - 1); restart(); });
+
   next.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); show(index + 1); restart(); });
   for (var k = 0; k < dots.length; k++) {
     (function(dotIndex){
@@ -529,5 +512,6 @@ document.addEventListener('DOMContentLoaded', function(){
   show(0);
   restart();
 });
+<script src="/hero-slideshow.js" defer></script>
 </body>
 </html>
