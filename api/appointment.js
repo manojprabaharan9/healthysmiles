@@ -1,8 +1,5 @@
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const CLINIC_EMAIL = process.env.CLINIC_EMAIL;
-const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL;
 
 function json(res, status, body) {
   res.status(status).setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -33,7 +30,7 @@ module.exports = async function handler(req, res) {
     return json(res, 405, { error: 'Method not allowed.' });
   }
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !RESEND_API_KEY || !CLINIC_EMAIL || !RESEND_FROM_EMAIL) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     return json(res, 500, { error: 'Appointment service is not configured.' });
   }
 
@@ -76,7 +73,7 @@ module.exports = async function handler(req, res) {
         branch,
         preferred_date: preferredDate,
         status: 'new',
-        notification_status: 'pending'
+        notification_status: 'not_required'
       })
     });
 
@@ -91,61 +88,9 @@ module.exports = async function handler(req, res) {
     return json(res, 500, { error: 'We could not save your request. Please try again.' });
   }
 
-  const requestId = saved.id;
-
-  try {
-    const email = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + RESEND_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: RESEND_FROM_EMAIL,
-        to: [CLINIC_EMAIL],
-        subject: 'New HealthySmiles appointment request — ' + name,
-        text:
-          'New appointment request\n\n' +
-          'Request ID: ' + requestId + '\n' +
-          'Name: ' + name + '\n' +
-          'Phone: ' + phone + '\n' +
-          'Branch: ' + branch + '\n' +
-          'Preferred date: ' + preferredDate + '\n\n' +
-          'Please contact the patient to confirm the appointment.',
-        headers: {
-          'X-HealthySmiles-Request-ID': String(requestId)
-        }
-      })
-    });
-
-    if (!email.ok) {
-      throw new Error('Email send failed: ' + email.status);
-    }
-
-    await fetch(SUPABASE_URL + '/rest/v1/appointment_requests?id=eq.' + encodeURIComponent(requestId), {
-      method: 'PATCH',
-      headers: {
-        ...headers,
-        Prefer: 'return=minimal'
-      },
-      body: JSON.stringify({ notification_status: 'sent', notified_at: new Date().toISOString() })
-    });
-  } catch (error) {
-    console.error(error);
-    await fetch(SUPABASE_URL + '/rest/v1/appointment_requests?id=eq.' + encodeURIComponent(requestId), {
-      method: 'PATCH',
-      headers: {
-        ...headers,
-        Prefer: 'return=minimal'
-      },
-      body: JSON.stringify({ notification_status: 'failed' })
-    }).catch(() => {});
-    return json(res, 502, { error: 'Your request was saved, but we could not notify the clinic. Please call the clinic directly.' });
-  }
-
   return json(res, 201, {
     ok: true,
-    requestId,
+    requestId: saved.id,
     message: 'Your appointment request has been received. Our front desk will contact you to confirm the time.'
   });
 };
